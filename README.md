@@ -140,6 +140,8 @@ npm test
 
 **No state persistence across reloads.** The search query and results live only in React state. Refreshing the page resets the app to its initial empty state. The right fix is to persist the query in sessionStorage and re-fetch on load. This was not implemented.
 
+**Not optimized for mobile.** The UI was designed and tested on desktop. On narrow screens the departure table remains readable but is not ideal. A proper mobile layout would likely replace the table with a card-based list per departure. This was not implemented.
+
 **No pagination.**  Pagination was considered early on, but the iRail API does not support it, and there is no way to fetch departures in portions. All data is always returned in a single response, so adding a pagination layer on top would only slice the data we already have in memory, not reduce the amount fetched from iRail. It was therefore left out.
 
 ## Time spent on the project
