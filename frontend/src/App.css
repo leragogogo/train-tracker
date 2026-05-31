@@ -158,30 +158,24 @@
 .departure-table th:nth-child(3) { width: 20%; }
 .departure-table th:nth-child(4) { width: 15%; }
 
-.departure-table th,
-.departure-table td {
-  text-align: left;
-}
-
-.departure-table td:nth-child(1) {
-  max-width: 0;
-  word-break: break-all;
-}
-
 .departure-table th {
   padding: 10px 20px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: left;
   color: var(--text);
   border-bottom: 1px solid var(--border);
 }
 
 .departure-table td {
   padding: 12px 20px;
+  text-align: left;
   color: var(--text-h);
   border-bottom: 1px solid var(--border);
+  max-width: 0;
+  word-break: break-all;
 }
 
 .departure-table tr:last-child td {
