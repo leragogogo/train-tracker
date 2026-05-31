@@ -163,6 +163,11 @@
   text-align: left;
 }
 
+.departure-table td:nth-child(1) {
+  max-width: 0;
+  word-break: break-all;
+}
+
 .departure-table th {
   padding: 10px 20px;
   font-size: 12px;
