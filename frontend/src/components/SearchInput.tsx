@@ -13,7 +13,7 @@ export function SearchInput({ value, onChange, onRefresh }: Props) {
         <input
           className="search-input"
           type="text"
-          placeholder="Search station (e.g. Bru, Aac…)"
+          placeholder="Search station"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoFocus

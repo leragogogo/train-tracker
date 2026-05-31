@@ -9,11 +9,11 @@ const mockData = {
   query: "Bru",
   stations: [
     {
-      station: "Bruges",
+      station: { id: "002", name: "Bruges", standardname: "Brugge" },
       departures: [
         {
           train_number: "BE.NMBS.IC1234",
-          destination: "Ghent",
+          destination: { id: "003", name: "Ghent-Sint-Pieters", standardname: "Gent-Sint-Pieters" },
           scheduled_departure: "2024-01-15T14:30:00",
           delay_minutes: 0,
         },
@@ -30,6 +30,21 @@ describe("App", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
+  });
+
+  it("shows placeholder when query is empty", async () => {
+    render(<App />);
+    expect(
+      screen.getByText(/search for a belgian train station/i),
+    ).toBeInTheDocument();
+  });
+
+  it("hides placeholder once user starts typing", async () => {
+    render(<App />);
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "B" } });
+    expect(
+      screen.queryByText(/search for a belgian train station/i),
+    ).not.toBeInTheDocument();
   });
 
   it("does not fetch when query is shorter than 3 chars", async () => {
@@ -71,7 +86,7 @@ describe("App", () => {
     await act(async () => {
       await vi.runAllTimersAsync();
     });
-    expect(screen.getByText("Bruges")).toBeInTheDocument();
+    expect(screen.getByText("Brugge (Bruges)")).toBeInTheDocument();
   });
 
   it('shows "No departures found" when stations array is empty', async () => {

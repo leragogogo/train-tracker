@@ -31,7 +31,12 @@ export function DepartureTable({ departures }: Props) {
         {departures.map((dep, i) => (
           <tr key={i}>
             <td className="mono">{dep.train_number}</td>
-            <td>{dep.destination}</td>
+            <td>
+              {dep.destination.standardname}
+              {dep.destination.standardname !== dep.destination.name && (
+                <span className="destination-alt">({dep.destination.name})</span>
+              )}
+            </td>
             <td className="mono">{formatTime(dep.scheduled_departure)}</td>
             <td>
               <Delay minutes={dep.delay_minutes} />

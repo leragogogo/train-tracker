@@ -52,6 +52,11 @@ export default function App() {
         onRefresh={() => setRefreshKey((k) => k + 1)}
       />
 
+      {query.length === 0 && status === "idle" && results === null && (
+        <p className="status-text placeholder">
+          Search for a Belgian train station to see upcoming departures.
+        </p>
+      )}
       {status === "loading" && <p className="status-text">Searching…</p>}
       {status === "error" && (
         <p className="status-text error">Something went wrong. Try again.</p>
@@ -65,7 +70,7 @@ export default function App() {
       {results && results.stations.length > 0 && (
         <div className="results">
           {results.stations.map((s) => (
-            <StationCard key={s.station} station={s} />
+            <StationCard key={s.station.id} station={s} />
           ))}
         </div>
       )}

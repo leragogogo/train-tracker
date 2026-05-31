@@ -8,7 +8,11 @@ interface Props {
 export function StationCard({ station }: Props) {
   return (
     <section className="station-card">
-      <h2 className="station-name">{station.station}</h2>
+      <h2 className="station-name">
+        {station.station.standardname === station.station.name
+          ? station.station.standardname
+          : `${station.station.standardname} (${station.station.name})`}
+      </h2>
       <DepartureTable departures={station.departures} />
     </section>
   );

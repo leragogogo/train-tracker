@@ -1,12 +1,18 @@
+export interface Station {
+  id: string;
+  name: string;
+  standardname: string;
+}
+
 export interface Departure {
   train_number: string;
-  destination: string;
+  destination: Station;
   scheduled_departure: string;
   delay_minutes: number;
 }
 
 export interface StationDepartures {
-  station: string;
+  station: Station;
   departures: Departure[];
 }
 
