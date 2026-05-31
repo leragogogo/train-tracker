@@ -132,6 +132,8 @@ npm test
 
 ## Decisions, trade-offs, and known limitations
 
+**Response schema.** The API schema is defined with Pydantic models. FastAPI uses these to validate responses and auto-generate an OpenAPI schema available at `/docs`. Both `station` (the departure board) and `destination` (inside each departure) are returned as full objects with `id`, `name`, and `standardname`, rather than just a name string. This gives the frontend enough information to display both the local and English names.
+
 **Fuzzy matching on both name fields.** For fuzzy search `rapidfuzz` library was chosen. Each station in the iRail dataset has an English `name` (e.g. "Ghent-Sint-Pieters") and a local `standardname` (e.g. "Gent-Sint-Pieters"). The query is scored against both with `rapidfuzz.partial_ratio` and the station matches if either score is ≥ 80. This means typing either the English or the local spelling finds the station. 80 was chosen as a practical balance.
 
 **In-memory stations cache.** The iRail stations list is fetched once on the first request and stored in memory for the lifetime of the process. This avoids a redundant network call on every search. The limitation is that the cache is never refreshed, and if iRail adds or renames stations, or any station is temporarily closed, the changes won’t be visible until a restart.
