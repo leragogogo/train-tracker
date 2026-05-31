@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      IRAIL_BASE_URL: ${IRAIL_BASE_URL}
+      DEPARTURE_WINDOW_SECONDS: ${DEPARTURE_WINDOW_SECONDS}
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_DEBOUNCE_MS: ${VITE_DEBOUNCE_MS}
+        VITE_MIN_QUERY_LENGTH: ${VITE_MIN_QUERY_LENGTH}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

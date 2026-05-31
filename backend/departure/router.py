@@ -49,6 +49,7 @@ import asyncio
 import os
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 from departure.models import (
@@ -65,10 +66,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import TypeAdapter
 from rapidfuzz import fuzz
 
-load_dotenv(Path(__file__).parent / ".env")
+load_dotenv(".env")
 
 IRAIL_BASE_URL = os.getenv("IRAIL_BASE_URL")
 DEPARTURE_WINDOW_SECONDS = int(os.getenv("DEPARTURE_WINDOW_SECONDS"))
+BRUSSELS = ZoneInfo("Europe/Brussels")
 
 router = APIRouter(prefix="/departures", tags=["departures"])
 
@@ -102,19 +104,20 @@ async def _fetch_departures(
 
 
 def _filter_window(departures: list[Departure], now: datetime) -> list[Departure]:
-    result = []
-    for dep in departures:
-        diff = (datetime.fromtimestamp(dep.time) - now).total_seconds()
-        if 0 <= diff <= DEPARTURE_WINDOW_SECONDS:
-            result.append(dep)
-    return result
+    return [
+        dep
+        for dep in departures
+        if 0
+        <= (datetime.fromtimestamp(dep.time, tz=BRUSSELS) - now).total_seconds()
+        <= DEPARTURE_WINDOW_SECONDS
+    ]
 
 
 def _to_departure_out(dep: Departure) -> DepartureOut:
     return DepartureOut(
         train_number=dep.vehicle,
         destination=dep.stationinfo,
-        scheduled_departure=datetime.fromtimestamp(dep.time),
+        scheduled_departure=datetime.fromtimestamp(dep.time, tz=BRUSSELS),
         delay_minutes=dep.delay,
     )
 
@@ -148,7 +151,7 @@ async def get_departures(q: str) -> DeparturesResponse:
             },
         )
 
-    now = datetime.now()
+    now = datetime.now(tz=BRUSSELS)
 
     async with httpx.AsyncClient(follow_redirects=True) as client:
         stations = stations_cache.get_stations()
