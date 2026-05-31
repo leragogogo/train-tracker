@@ -48,7 +48,6 @@ Response — 400 Bad Request (q shorter than 3 characters):
 import asyncio
 import os
 from datetime import datetime
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -76,15 +75,13 @@ router = APIRouter(prefix="/departures", tags=["departures"])
 
 
 async def _fetch_departures(
-    client: httpx.AsyncClient, station_id: str, now: datetime
+    client: httpx.AsyncClient, station_id: str
 ) -> list[Departure]:
     try:
         response = await client.get(
             f"{IRAIL_BASE_URL}/liveboard/",
             params={
                 "id": station_id,
-                "date": now.strftime("%d%m%y"),
-                "time": now.strftime("%H%M"),
                 "format": "json",
                 "lang": "en",
                 "alerts": "false",
@@ -166,7 +163,7 @@ async def get_departures(q: str) -> DeparturesResponse:
 
         matching = _get_matching_stations(q, stations)
 
-        tasks = [_fetch_departures(client, s.id, now) for s in matching]
+        tasks = [_fetch_departures(client, s.id) for s in matching]
         all_departures = await asyncio.gather(*tasks)
 
     station_results = []
