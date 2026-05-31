@@ -15,7 +15,7 @@ class StationsResponse(BaseModel):
 
 class Departure(BaseModel):
     id: int
-    station: str  # destination station name
+    stationinfo: Station  # destination station with name and standardname
     time: int  # unix timestamp
     delay: int  # delay in minutes (converted from seconds by validator)
     vehicle: str
@@ -28,13 +28,13 @@ class Departure(BaseModel):
 
 class DepartureOut(BaseModel):
     train_number: str
-    destination: str
+    destination: Station
     scheduled_departure: datetime
     delay_minutes: int
 
 
 class StationDeparturesOut(BaseModel):
-    station: str
+    station: Station
     departures: list[DepartureOut]
 
 

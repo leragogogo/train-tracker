@@ -23,12 +23,21 @@ STATIONS_JSON = {
 
 
 def _departure(
-    dep_id, destination, offset_seconds, delay_seconds=0, vehicle="BE.NMBS.IC1234"
+    dep_id,
+    destination,
+    offset_seconds,
+    delay_seconds=0,
+    vehicle="BE.NMBS.IC1234",
+    standardname=None,
 ):
     """Build a fake iRail departure dict with a timestamp relative to now."""
     return {
         "id": str(dep_id),
-        "station": destination,
+        "stationinfo": {
+            "id": f"BE.NMBS.00{dep_id}",
+            "name": destination,
+            "standardname": standardname or destination,
+        },
         "time": str(int(time.time() + offset_seconds)),
         "delay": str(delay_seconds),
         "vehicle": vehicle,
@@ -127,14 +136,14 @@ class TestStationMatching:
         data = r.json()
         assert r.status_code == 200
         assert len(data["stations"]) == 1
-        assert "Ghent" in data["stations"][0]["station"]
+        assert "Ghent" in data["stations"][0]["station"]["name"]
 
     def test_case_insensitive_lower(self):
         deps = [_departure(0, "Antwerp", offset_seconds=5 * 60)]
         mock = _build_mock_client(STATIONS_JSON, {"001": deps, "002": deps})
         with patch("departure.router.httpx.AsyncClient", return_value=mock):
             r = tc.get("/departures/", params={"q": "bru"})
-        station_names = {s["station"] for s in r.json()["stations"]}
+        station_names = {s["station"]["name"] for s in r.json()["stations"]}
         assert "Brussels-Central" in station_names
         assert "Bruges" in station_names
 
@@ -143,7 +152,7 @@ class TestStationMatching:
         mock = _build_mock_client(STATIONS_JSON, {"001": deps, "002": deps})
         with patch("departure.router.httpx.AsyncClient", return_value=mock):
             r = tc.get("/departures/", params={"q": "BRU"})
-        station_names = {s["station"] for s in r.json()["stations"]}
+        station_names = {s["station"]["name"] for s in r.json()["stations"]}
         assert "Brussels-Central" in station_names
         assert "Bruges" in station_names
 
@@ -176,7 +185,11 @@ class TestResponseShape:
     def _get_first_departure(self):
         deps = [
             _departure(
-                0, "Ghent-Sint-Pieters", offset_seconds=5 * 60, vehicle="BE.NMBS.IC1234"
+                0,
+                "Ghent-Sint-Pieters",
+                offset_seconds=5 * 60,
+                vehicle="BE.NMBS.IC1234",
+                standardname="Gent-Sint-Pieters",
             )
         ]
         mock = _build_mock_client(STATIONS_JSON, {"001": deps})
@@ -187,9 +200,10 @@ class TestResponseShape:
     def test_all_departure_fields_present(self):
         dep = self._get_first_departure()
         assert "train_number" in dep
-        assert "destination" in dep
         assert "scheduled_departure" in dep
         assert "delay_minutes" in dep
+        assert "name" in dep["destination"]
+        assert "standardname" in dep["destination"]
 
     def test_delay_converted_to_minutes(self):
         deps = [_departure(0, "Ghent", offset_seconds=5 * 60, delay_seconds=300)]
