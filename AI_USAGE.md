@@ -33,4 +33,4 @@ I asked Claude Code to write Dockerfiles and a Docker Compose file for reproduci
 
 ## README
 
-I used AI to generate a README with the following sections: Running with Docker, Running locally, Running tests,and Decisions, trade-offs, and known limitations. The sections connected to running were well-written. I just added the command for Windows in one section, which was missing, and added a troubleshooting subsection in the Running with Docker section.
+I used AI to generate a README with the following sections: Running with Docker, Running locally, Running tests,and Decisions, trade-offs, and known limitations. The sections connected to running were well-written. I just added the command for Windows in one section, which was missing, and added a troubleshooting subsection in the Running with Docker section. The Decisions, trade-offs, and known limitations section I changed a lot.
