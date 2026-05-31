@@ -12,6 +12,7 @@ The app uses fuzzy matching against both the English name and local standardname
 - [Running locally](#running-locally)
 - [Running tests](#running-tests)
 - [Decisions, trade-offs, and known limitations](#decisions-trade-offs-and-known-limitations)
+- [Time spent on the project](#time-spent-on-the-project)
 
 ---
 
@@ -22,8 +23,17 @@ The app uses fuzzy matching against both the English name and local standardname
 ```bash
 git clone https://github.com/leragogogo/train-tracker.git
 cd train-tracker
+# Windows: copy .env.template .env
 cp .env.template .env   # edit .env if you want to change any values
-docker compose up --build
+docker compose up --build -d
+```
+
+If you encounter troubles during `docker compose up --build -d`:
+
+```bash
+docker compose build frontend
+docker compose build backend
+docker compose up -d
 ```
 
 Open **http://localhost** in your browser.
@@ -65,7 +75,7 @@ pip install -r requirements.txt
 Copy the env template and adjust if needed:
 
 ```bash
-cp .env.template .env
+cp .env.template .env # Windows: copy .env.template .env
 ```
 
 Start the API server:
@@ -88,7 +98,7 @@ npm install
 Copy the env template:
 
 ```bash
-cp .env.template .env
+cp .env.template .env # Windows: copy .env.template .env
 ```
 
 Start the dev server:
@@ -129,3 +139,7 @@ npm test
 **No state persistence across reloads.** The search query and results live only in React state. Refreshing the page resets the app to its initial empty state. The right fix is to persist the query in sessionStorage and re-fetch on load. This was not implemented.
 
 **No pagination.**  Pagination was considered early on, but the iRail API does not support it, and there is no way to fetch departures in portions. All data is always returned in a single response, so adding a pagination layer on top would only slice the data we already have in memory, not reduce the amount fetched from iRail. It was therefore left out.
+
+## Time spent on the project
+
+Roughly, I spent 5 hours.
