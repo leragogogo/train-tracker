@@ -2,7 +2,16 @@
 
 Search for Belgian train stations and see upcoming departures in real time. Powered by the [iRail API](https://api.irail.be).
 
-Type at least 3 characters — the app uses fuzzy matching against both the English name and local standardname of each station.
+The app uses fuzzy matching against both the English name and local standardname of each station.
+
+---
+
+## Table of contents
+
+- [Running with Docker](#running-with-docker)
+- [Running locally](#running-locally)
+- [Running tests](#running-tests)
+- [Decisions, trade-offs, and known limitations](#decisions-trade-offs-and-known-limitations)
 
 ---
 
@@ -108,3 +117,15 @@ pytest
 cd frontend
 npm test
 ```
+
+---
+
+## Decisions, trade-offs, and known limitations
+
+**Fuzzy matching on both name fields.** For fuzzy search `rapidfuzz` library was chosen. Each station in the iRail dataset has an English `name` (e.g. "Ghent-Sint-Pieters") and a local `standardname` (e.g. "Gent-Sint-Pieters"). The query is scored against both with `rapidfuzz.partial_ratio` and the station matches if either score is ≥ 80. This means typing either the English or the local spelling finds the station. 80 was chosen as a practical balance.
+
+**In-memory stations cache.** The iRail stations list is fetched once on the first request and stored in memory for the lifetime of the process. This avoids a redundant network call on every search. The limitation is that the cache is never refreshed, and if iRail adds or renames stations, or any station is temporarily closed, the changes won’t be visible until a restart.
+
+**No state persistence across reloads.** The search query and results live only in React state. Refreshing the page resets the app to its initial empty state. The right fix is to persist the query in sessionStorage and re-fetch on load. This was not implemented.
+
+**No pagination.**  Pagination was considered early on, but the iRail API does not support it, and there is no way to fetch departures in portions. All data is always returned in a single response, so adding a pagination layer on top would only slice the data we already have in memory, not reduce the amount fetched from iRail. It was therefore left out.
